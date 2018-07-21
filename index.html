@@ -76,7 +76,9 @@
         var myid = '';
 
         $('form').submit(() => {
-            socket.emit('chat message', clients[0].id + $('#m').val())
+            for (let index = 0; index < Math.min(2, clients.length); index++) {
+                socket.emit('chat message', clients[index].id + $('#m').val())
+            }
             $('#m').val('')
 
             return false
