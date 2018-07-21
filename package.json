@@ -1,0 +1,11 @@
+{
+    "name": "real-time-chat",
+    "scripts": {
+        "start": "node index"
+    },
+    "dependencies": {
+        "express": "latest",
+        "now": "^11.2.10",
+        "socket.io": "^2.1.1"
+    }
+}
