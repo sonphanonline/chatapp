@@ -56,10 +56,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    $(()=>{
+    $(() => {
         var socket = io()
+        var clients = []
 
-        $('form').submit(()=>{
+        $('form').submit(() => {
             socket.emit('chat message', $('#m').val())
             $('#m').val('')
 
@@ -69,6 +70,11 @@
         socket.on('chat message', msg => {
             $('#messages').append($('<li>').text(msg))
         })
+
+        socket.on('clients list', (msg) => {
+            console.log(msg)
+            clients = msg
+        })
     })
-    
+
 </script>
