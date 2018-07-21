@@ -44,8 +44,22 @@
     #messages li:nth-child(odd) {
         background: #eee;
     }
-</style>
 
+    #users {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #users li {
+        padding: 5px 10px;
+    }
+
+    #users li:nth-child(odd) {
+        background: rgb(233, 6, 6);
+    }
+</style>
+<ul id="users"></ul>
 <ul id="messages"></ul>
 
 <form action="">
@@ -59,9 +73,10 @@
     $(() => {
         var socket = io()
         var clients = []
+        var myid = '';
 
         $('form').submit(() => {
-            socket.emit('chat message', $('#m').val())
+            socket.emit('chat message', clients[0].id + $('#m').val())
             $('#m').val('')
 
             return false
@@ -71,9 +86,18 @@
             $('#messages').append($('<li>').text(msg))
         })
 
+        socket.on('client id', (msg) => {
+            myid = msg;
+            $('#messages').append($('<li>').text(msg))
+        })
+
         socket.on('clients list', (msg) => {
             console.log(msg)
             clients = msg
+
+            $('#users').html('');
+            msg.map(x => $('#users').append('<li>' + x.index + ' => ' + x.id + '</li>'));
+
         })
     })
 

@@ -3,6 +3,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 
 const clients = []
+const client_id_length = 'B73fyR3cNcd8p8dSAAAD'.length
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html')
@@ -13,20 +14,30 @@ io.on('connection', socket => {
 
     clients.push({ id: socket.id, socket: socket })
 
-    io.emit('clients list', clients.map(x=>x.id))
+    socket.emit('client id',socket.id)
 
-    // socket.on('chat message', msg => {
-    //     console.log(msg)
+    io.emit('clients list', clients.map((x,index)=>{
+        return {id:x.id,index:index}
+    }))
 
-    //     toId = msg.substring(0,32);
+    socket.on('chat message', msg => {
+        console.log(msg)
 
-    //     if (msg.indexOf('1') !== -1) {
-    //         io.emit('chat message', 'server : ' + msg)
-    //     }
-    //     else {
-    //         socket.emit('chat message', 'your message: ' + msg)
-    //     }
-    // })
+        toId = msg.substring(0,client_id_length);
+
+        // if (msg.indexOf('1') !== -1) {
+        //     io.emit('chat message', 'server : ' + msg)
+        // }
+        // else {
+        //     socket.emit('chat message', 'your message: ' + msg)
+        // }
+        for(index = 0;index<clients.length;index++){
+            if (clients[index].id === toId) {
+                clients[index].socket.emit('chat message',msg.substring(client_id_length))
+                break
+            }
+        }
+    })
 
     socket.on('disconnect', () => {
         console.log('user disconnected: ' + socket.id)
@@ -35,7 +46,7 @@ io.on('connection', socket => {
             console.log(clients[index].id)
             if (clients[index].id === socket.id) {
                 console.log('removed: ' + socket.id)
-                clients.slice(index,1)
+                console.log(clients.splice(index,1))
                 break
             }
         }
